@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> عنباری</title>
+<title>عنباری</title>
 
 <style>
 *{
@@ -12,14 +12,14 @@
     box-sizing:border-box;
 }
 
-    html,body{
+html,body{
     width:100%;
     height:100%;
     background:#000;
     overflow-y:scroll;
     scroll-snap-type:y mandatory;
     scroll-behavior:smooth;
-    }
+}
 
 .item{
     width:100vw;
@@ -46,18 +46,15 @@ img,video{
     width:40px;
     z-index:9999;
 }
+
 #splash{
     position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
+    inset:0;
     background:#000;
     display:flex;
     justify-content:center;
     align-items:center;
     z-index:99999;
-    opacity:1;
     transition:opacity 0.8s ease;
 }
 
@@ -65,160 +62,67 @@ img,video{
     opacity:0;
     pointer-events:none;
 }
-    #popup{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.9);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:100000;
-}
-
-#popup-box{
-    border:2px solid red;
-    color:white;
-    padding:20px;
-    border-radius:10px;
-    font-size:20px;
-    text-align:center;
-}
 </style>
 </head>
-<script>
-async function uploadImage() {
-  const file = document.getElementById("fileInput").files[0];
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "anbari");
+<body>
 
-  const res = await fetch("https://api.cloudinary.com/v1_1/deyzaowih/image/upload", {
-    method: "POST",
-    body: formData
-  });
+<div id="splash">Loading...</div>
 
-  const data = await res.json();
-
-  console.log(data);
-
-  
-  document.getElementById("preview").src = data.secure_url;
-}
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        const splash = document.getElementById("splash");
-
-        splash.classList.add("hide");
-
-        setTimeout(() => {
-            splash.remove();
-        }, 800);
-    }, 2000);
-});
-</script>
-    <body>
-
-<img id="preview" style="max-width:200px; display:block; margin-top:10px;">
-  <div id="popup">
-    <div id="popup-box">
-        آیدی تلگرام:<br>
-        @aghey
-    </div>
-  </div>
-    <div id="splash">
-    <img src="logo.png" alt="Logo">
-    </div>
 <div class="logo">
-    <img src="logo.png">
+    <img src="ulogo.png">
 </div>
+
 <script>
-<script>
-const feedContainer = document.body;
+/* ====== AUTO FEED (FIXED) ====== */
+const container = document.body;
 
 let page = 1;
 const PER_PAGE = 5;
+const MAX = 200;
 
-function loadPage(pageNum){
+function loadPage(p){
 
-    const start = ((pageNum - 1) * PER_PAGE) + 1;
+    const start = (p - 1) * PER_PAGE + 1;
     const end = start + PER_PAGE - 1;
 
-    for(let i = start; i <= end; i++){
+    for(let i = start; i <= end && i <= MAX; i++){
 
-        feedContainer.insertAdjacentHTML(
-            "beforeend",
-            `<div class="item">
-                <img
-                    loading="lazy"
-                    src="media/${i}.png"
-                    onerror="this.closest('.item').remove()">
-            </div>`
-        );
+        container.insertAdjacentHTML("beforeend",
+        `<div class="item">
+            <img loading="lazy"
+                 src="media/${i}.png"
+                 onerror="this.closest('.item').remove()">
+        </div>`);
 
-        feedContainer.insertAdjacentHTML(
-            "beforeend",
-            `<div class="item">
-                <video
-                    src="media/${i}.mp4"
-                    controls
-                    preload="none"
-                    onerror="this.closest('.item').remove()">
-                </video>
-            </div>`
-        );
+        container.insertAdjacentHTML("beforeend",
+        `<div class="item">
+            <video preload="none"
+                   controls
+                   src="media/${i}.mp4"
+                   onerror="this.closest('.item').remove()">
+            </video>
+        </div>`);
     }
 }
 
 loadPage(page);
 
+/* ====== INFINITE SCROLL ====== */
 window.addEventListener("scroll", () => {
-
-    if (
-        window.innerHeight + window.scrollY
-        >= document.body.offsetHeight - 1000
-    ) {
+    if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 800){
         page++;
         loadPage(page);
     }
-
-});
-    
-    
-    const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    const video = entry.target.querySelector("video");
-
-    if (!video) return;
-
-    if (entry.isIntersecting) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
-  });
-}, {
-  threshold: 0.7
 });
 
-setInterval(() => {
-  document.querySelectorAll(".item").forEach(item => {
-      observer.observe(item);
-  });
-},1000);
-const logo = document.querySelector(".logo");
-const popup = document.getElementById("popup");
-
-logo.addEventListener("click", () => {
-    popup.style.display = "flex";
-});
-
-popup.addEventListener("click", () => {
-    popup.style.display = "none";
+/* ====== SPLASH FIX ====== */
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        document.getElementById("splash").classList.add("hide");
+    }, 800);
 });
 </script>
+
 </body>
-    <div class="logo">
-    <img src="ulogo.png">
-    </div>
 </html>
